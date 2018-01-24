@@ -9,7 +9,7 @@ export class Snake
 {
 	private SETTINGS = {
 		grid: {size: 10, rows: 20, columns: 20},
-		snake: {startLength: 3, startSpeed: 600, speedIncrement: 10, minSpeed: 100}
+		snake: {startLength: 3, startSpeed: 400, speedIncrement: 20, minSpeed: 100, growBy: 1}
 	}
 
 	private DIRECTION = {
@@ -108,6 +108,8 @@ export class Snake
 			this.snake.unshift(snakePart);
 		}
 
+		this.placeFood();
+
 		this.draw();
 	}
 
@@ -115,7 +117,7 @@ export class Snake
 	{
 		// reset all sqaures
 		for(let i = 0; i < this.grid.length; i++) this.grid[i].className = '';
-		
+
 		// set snake squares
 		for(let i = 0; i < this.snake.length; i++)
 		{
@@ -139,9 +141,53 @@ export class Snake
 			{
 				classes.push(snakePart.direction.name);
 			}
-			let gridIndex = snakePart.position.x + (snakePart.position.y * this.SETTINGS.grid.columns);
+			let gridIndex = this.getIndexFromPosition(snakePart.position);
 			this.grid[gridIndex].className = classes.join(' ');
 		}
+
+		// set food sqaure
+
+		let foodSquare = this.grid[this.getIndexFromPosition(this.food)];
+		foodSquare.className = 'food';
+	}
+
+	private getIndexFromPosition(position:Position):number
+	{
+		return position.x + (position.y * this.SETTINGS.grid.columns);
+	}
+
+	private getPositionFromIndex(index:number):Position
+	{
+		let y = Math.floor(index / this.SETTINGS.grid.columns);
+		let x = Math.floor(index % this.SETTINGS.grid.columns);
+		return {x: x, y: y};
+	}
+
+	private eatFood()
+	{
+		this.states.snakeLength += this.SETTINGS.snake.growBy;
+		this.states.speed -= this.SETTINGS.snake.speedIncrement;
+		if(this.states.speed < this.SETTINGS.snake.minSpeed) this.states.speed = this.SETTINGS.snake.minSpeed;
+		this.placeFood();
+	}
+
+	private placeFood()
+	{
+		let takenSpaces: number[] = [];
+		for(let i = 0; i < this.snake.length; i++)
+		{
+			let index = this.getIndexFromPosition(this.snake[i].position);
+			takenSpaces.push(index);
+		}
+
+		let availableSpaces: number[] = [];
+		for(let i = 0; i < this.grid.length; i++)
+		{
+			if(takenSpaces.indexOf(i) < 0) availableSpaces.push(i);
+		}
+
+		let i = Math.floor(Math.random() * availableSpaces.length);
+		this.food = this.getPositionFromIndex(availableSpaces[i]);
 	}
 
 	private tick(timeStamp:number)
@@ -192,6 +238,13 @@ export class Snake
 					this.snake.shift();
 				}
 
+				// check if head is on food
+
+				if(newSnakeHead.position.x == this.food.x && newSnakeHead.position.y == this.food.y)
+				{
+					this.eatFood();
+				}
+
 				this.draw();
 			}
 
@@ -202,6 +255,7 @@ export class Snake
 	public start()
 	{
 		this.reset();
+		
 		this.states.speed = this.SETTINGS.snake.startSpeed;
 		this.states.game = this.GAME_STATES.playing;
 		this.tick(0);

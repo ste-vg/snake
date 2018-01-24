@@ -1,4 +1,7 @@
 import { Snake } from "./app/snake";
 
-let game = new Snake(document.getElementById('board'), document.getElementById('score'));
+let board = document.getElementById('board');
+let score = document.getElementById('score');
+
+let game = new Snake(board, score);
 game.start();

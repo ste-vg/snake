@@ -28,6 +28,13 @@
 	>div
 	{
         background-color: var(--color-background);
+
+        &.food
+        {
+            background-color: var(--color-snake);
+            border-radius: 50%;
+            margin: 1px;
+        }
         
         &.snake
         {
