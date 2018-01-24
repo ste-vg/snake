@@ -18,7 +18,10 @@
     "url": "https://github.com/steveg3003/simple-snake/issues"
   },
   "homepage": "https://github.com/steveg3003/simple-snake#readme",
-  "dependencies": {},
+  "dependencies": {
+    "@types/core-js": "^0.9.36",
+    "rxjs": "^5.5.6"
+  },
   "devDependencies": {
     "fs": "0.0.1-security",
     "html-loader": "^0.5.4",

@@ -1,13 +1,15 @@
 import '../styles.scss';
 import './snake.scss';
 
-import { States, Position, SnakePart } from "./Interfaces";
+import { Observable, Subscription } from "rxjs";
+
+import { States, Position, SnakePart, Direction } from "./Interfaces";
 
 export class Snake
 {
 	private SETTINGS = {
 		grid: {size: 10, rows: 20, columns: 20},
-		snake: {startLength: 3, startSpeed: 1, speedIncrement: 0.1}
+		snake: {startLength: 3, startSpeed: 800, speedIncrement: 10}
 	}
 
 	private DIRECTION = {
@@ -17,14 +19,30 @@ export class Snake
 		right: 	{name: 'right', x: 1, 	y: 0},
 	}
 
+	private GAME_STATES = {
+		ready: 'READY',
+		playing: 'PLAYING',
+		ended: 'ENDED'
+	}
+
 	private states:States = {
 		direction: this.DIRECTION.up,
-		speed: 0
+		nextDirection: this.DIRECTION.up,
+		speed: 0,
+		game: this.GAME_STATES.ready,
+		timeStamp: 0,
+		snakeLength: 0
 	}
 
 	private board:HTMLElement;
 	private grid:HTMLElement[] = [];
 	private snake:SnakePart[] = [];
+
+	// observables
+	private keyPress:Observable<any>;
+
+	// subscriptions
+	private keyPressSubscription:Subscription;
 
 	constructor(boardElement: HTMLElement, scoreElement: HTMLElement)
 	{
@@ -44,12 +62,51 @@ export class Snake
 			this.board.appendChild(sq);
 		}
 
+		// setup observables
+	
+		this.keyPress = Observable.fromEvent(document, "keydown")
+			.filter((e:KeyboardEvent) => ['arrowright', 'arrowleft', 'arrowup', 'arrowdown'].indexOf(e.key.toLowerCase()) >= 0)
+			.map((e:KeyboardEvent) => e.key.toLowerCase().replace('arrow',''))
+
+		this.keyPressSubscription = this.keyPress.subscribe((key: string) => 
+		{
+			if(this.states.game == this.GAME_STATES.playing)
+			{
+				this.setDirection(this.DIRECTION[key])
+			}
+		})
+
+		// setup starting game state
+
 		this.reset();
 	}
 
-	private getDirection()
+	private setDirection(direction:Direction)
 	{
+		if(this.states.direction.x != direction.x && this.states.direction.y != direction.y)
+		{
+			this.states.nextDirection = direction;
+		}
+	}
 
+	private reset()
+	{
+		this.snake = []
+		this.states.direction = this.states.nextDirection = this.DIRECTION.up;
+		this.states.snakeLength = this.SETTINGS.snake.startLength;
+		let center:Position = {x: Math.round(this.SETTINGS.grid.columns / 2), y: Math.round(this.SETTINGS.grid.rows / 2)};
+
+		for(let i = 0; i < this.states.snakeLength; i++)
+		{
+			let snakePart:SnakePart = {
+				position: {x: center.x, y: center.y + (i * 1)},
+				direction: this.DIRECTION.up
+			}
+
+			this.snake.push(snakePart);
+		}
+
+		this.draw();
 	}
 
 	private draw()
@@ -63,28 +120,51 @@ export class Snake
 			let snakePart = this.snake[i];
 			let gridIndex = snakePart.position.x + (snakePart.position.y * this.SETTINGS.grid.columns);
 			this.grid[gridIndex].className = 'snake';
-		} 
-
-		
-	
+		}
 	}
 
-	public reset()
+	private tick(timeStamp:number)
 	{
-		this.snake = []
-		this.states.direction = this.DIRECTION.up;
-		let center:Position = {x: Math.round(this.SETTINGS.grid.columns / 2), y: Math.round(this.SETTINGS.grid.rows / 2)};
-
-		for(let i = 0; i < this.SETTINGS.snake.startLength; i++)
+		if(this.states.game == this.GAME_STATES.playing)
 		{
-			let snakePart:SnakePart = {
-				position: {x: center.x, y: center.y + (i * 1)},
-				direction: this.DIRECTION.up
+			if(!this.states.timeStamp || (timeStamp - this.states.timeStamp) > this.states.speed)
+			{
+				this.states.timeStamp = timeStamp;
+				this.states.direction = this.states.nextDirection;
+
+				let snakeHead = this.snake[this.snake.length - 1];
+				let newPosition:Position = {
+					x: snakeHead.position.x + this.states.direction.x,
+					y: snakeHead.position.y + this.states.direction.y
+				}
+				let newSnakeHead:SnakePart = {
+					position: newPosition,
+					direction: this.DIRECTION[this.states.direction.name]
+				}
+				this.snake.push(newSnakeHead);
+
+				while(this.snake.length > this.states.snakeLength)
+				{
+					this.snake.shift();
+				}
+
+				this.draw();
 			}
 
-			this.snake.push(snakePart);
+			window.requestAnimationFrame(time => this.tick(time));
 		}
+	}
 
-		this.draw();
+	public start()
+	{
+		this.reset();
+		this.states.speed = this.SETTINGS.snake.startSpeed;
+		this.states.game = this.GAME_STATES.playing;
+		this.tick(0);
+	}
+
+	private end()
+	{
+		this.states.game = this.GAME_STATES.ended;
 	}
 }

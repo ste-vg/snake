@@ -20,5 +20,9 @@ export interface SnakePart
 export interface States
 {
     direction: Direction;
+    nextDirection: Direction;
     speed: number;
+    game: string;
+    timeStamp: number;
+    snakeLength: number;
 }
