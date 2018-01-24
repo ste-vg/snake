@@ -1,0 +1,21 @@
+#board 
+{
+	--grid-columns: 0;
+	--grid-rows: 0;
+	--grid-size: 0;
+	
+    background: #fff;
+    box-shadow: 9px 7px 30px -6px rgba(0,0,0,0.25);
+    width: calc(var(--grid-size) * var(--grid-columns) * 1px);
+    height: calc(var(--grid-size) * var(--grid-rows) * 1px);
+	border-radius: 5px;
+	display: grid;
+	grid-template-columns: repeat(var(--grid-columns), 1fr);
+ 	grid-template-rows: repeat(var(--grid-rows), 1fr);
+	grid-gap: 1px;
+	
+	>div
+	{
+		background-color: red;
+	}
+}

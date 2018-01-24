@@ -1,5 +1,5 @@
 {
-  "name": "typescript-webpack-boilerplate",
+  "name": "simple-snake",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,21 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/steveg3003/typescript-webpack-boilerplate.git"
+    "url": "git+https://github.com/steveg3003/simple-snake.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/steveg3003/typescript-webpack-boilerplate/issues"
+    "url": "https://github.com/steveg3003/simple-snake/issues"
   },
-  "homepage": "https://github.com/steveg3003/typescript-webpack-boilerplate#readme",
-  "dependencies": {
-    
-  },
+  "homepage": "https://github.com/steveg3003/simple-snake#readme",
+  "dependencies": {},
   "devDependencies": {
     "fs": "0.0.1-security",
-    "gsap": "^1.20.3",
     "html-loader": "^0.5.4",
     "html-webpack-plugin": "^2.30.1",
     "rimraf": "^2.6.2",
@@ -34,8 +31,6 @@
     "css-loader": "^0.28.8",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
-    "@types/gsap": "^1.19.1",
-    "@types/pixi.js": "^4.6.3",
     "node-sass": "^4.7.2",
     "sass-loader": "^6.0.6",
     "typescript": "^2.6.2",

@@ -1,3 +1,3 @@
-import { App } from "./app/app";
+import { Snake } from "./app/snake";
 
-let app = new App();
+let game = new Snake(document.getElementById('board'), document.getElementById('score'));

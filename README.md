@@ -1,2 +1,2 @@
-# typescript-webpack-boilerplate
-My typescript webpack boilerplate
+# Simple Snake
+A version of Snake built with typescript, CSS grid, CSS custom properties
