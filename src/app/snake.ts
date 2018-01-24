@@ -9,7 +9,7 @@ export class Snake
 {
 	private SETTINGS = {
 		grid: {size: 10, rows: 20, columns: 20},
-		snake: {startLength: 3, startSpeed: 800, speedIncrement: 10}
+		snake: {startLength: 3, startSpeed: 600, speedIncrement: 10, minSpeed: 100}
 	}
 
 	private DIRECTION = {
@@ -22,7 +22,8 @@ export class Snake
 	private GAME_STATES = {
 		ready: 'READY',
 		playing: 'PLAYING',
-		ended: 'ENDED'
+		ended: 'ENDED',
+		paused: 'PAUSED'
 	}
 
 	private states:States = {
@@ -37,6 +38,7 @@ export class Snake
 	private board:HTMLElement;
 	private grid:HTMLElement[] = [];
 	private snake:SnakePart[] = [];
+	private food:Position;
 
 	// observables
 	private keyPress:Observable<any>;
@@ -103,7 +105,7 @@ export class Snake
 				direction: this.DIRECTION.up
 			}
 
-			this.snake.push(snakePart);
+			this.snake.unshift(snakePart);
 		}
 
 		this.draw();
@@ -117,9 +119,28 @@ export class Snake
 		// set snake squares
 		for(let i = 0; i < this.snake.length; i++)
 		{
+			let classes = ['snake'];
+			if(this.states.game == this.GAME_STATES.ended) classes.push('dead');
+			if(i == 0) classes.push('tail');
+			if(i == this.snake.length - 1) classes.push('head');
 			let snakePart = this.snake[i];
+			let nextSnakePart = this.snake[i + 1] ? this.snake[i + 1] : null;
+			
+			if(nextSnakePart && snakePart.direction.name != nextSnakePart.direction.name)
+			{
+				classes.push('turn-' + nextSnakePart.direction.name)
+			}
+			
+			if(i == 0 && nextSnakePart)
+			{
+				classes.push(nextSnakePart.direction.name);
+			}
+			else
+			{
+				classes.push(snakePart.direction.name);
+			}
 			let gridIndex = snakePart.position.x + (snakePart.position.y * this.SETTINGS.grid.columns);
-			this.grid[gridIndex].className = 'snake';
+			this.grid[gridIndex].className = classes.join(' ');
 		}
 	}
 
@@ -137,6 +158,29 @@ export class Snake
 					x: snakeHead.position.x + this.states.direction.x,
 					y: snakeHead.position.y + this.states.direction.y
 				}
+
+				// end the game if the new postion is out of bounds
+
+				if(	newPosition.x < 0 || 
+					newPosition.x > this.SETTINGS.grid.columns - 1 || 
+					newPosition.y < 0 || 
+					newPosition.y > this.SETTINGS.grid.rows - 1)
+				{
+					return this.end();
+				}
+
+				// end the game if the new position is already taken by snake
+
+				for(let i = 0; i < this.snake.length; i++)
+				{
+					if(this.snake[i].position.x == newPosition.x && this.snake[i].position.y == newPosition.y)
+					{
+						return this.end();
+					}
+				}
+
+				// all good to proceed with new snake head
+
 				let newSnakeHead:SnakePart = {
 					position: newPosition,
 					direction: this.DIRECTION[this.states.direction.name]
@@ -165,6 +209,8 @@ export class Snake
 
 	private end()
 	{
+		console.warn('GAME OVER')
 		this.states.game = this.GAME_STATES.ended;
+		this.draw();
 	}
 }

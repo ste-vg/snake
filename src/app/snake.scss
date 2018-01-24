@@ -1,3 +1,9 @@
+@keyframes flash {
+    0% { opacity: 1 }
+    50% { opacity: 0.5 }
+    100% { opacity: 1 }
+  }
+
 #board 
 {
 	--grid-columns: 0;
@@ -26,6 +32,53 @@
         &.snake
         {
             background-color: var(--color-snake);
+
+            &.head
+            {
+                &.up{ border-top-left-radius: 50%; border-top-right-radius: 50%;}
+                &.down{ border-bottom-left-radius: 50%; border-bottom-right-radius: 50%;}
+                &.left{ border-top-left-radius: 50%; border-bottom-left-radius: 50%;}
+                &.right{ border-top-right-radius: 50%; border-bottom-right-radius: 50%;}
+            }
+
+            &.tail
+            {
+                &.up{ border-bottom-left-radius: 50% 100%; border-bottom-right-radius: 50% 100%;}
+                &.down{ border-top-left-radius: 50% 100%; border-top-right-radius: 50% 100%;}
+                &.right{ border-bottom-left-radius: 100% 50%; border-top-left-radius: 100% 50%;}
+                &.left{ border-bottom-right-radius: 100% 50%; border-top-right-radius: 100% 50%;}
+            }
+
+            &.turn-left
+            {
+                &.up{ border-top-right-radius: 50%;}
+                &.down{ border-bottom-right-radius: 50%;}
+            }
+            
+            &.turn-right
+            {
+                &.up{ border-top-left-radius: 50%;}
+                &.down{ border-bottom-left-radius: 50%;}
+            }
+            
+            &.turn-up
+            {
+                &.left{ border-bottom-left-radius: 50%;}
+                &.right{ border-bottom-right-radius: 50%;}
+            }
+            
+            &.turn-down
+            {
+                &.left{ border-top-left-radius: 50%;}
+                &.right{ border-top-right-radius: 50%;}
+            }
+
+            &.dead
+            {
+                animation: flash 0.4s infinite;
+            }
         }
+
+        
 	}
 }
