@@ -8,8 +8,8 @@ import { States, Position, SnakePart, Direction } from "./Interfaces";
 export class Snake
 {
 	private SETTINGS = {
-		grid: {size: 10, rows: 20, columns: 20},
-		snake: {startLength: 3, startSpeed: 400, speedIncrement: 20, minSpeed: 100, growBy: 1}
+		grid: {size: 10, rows: 20, columns: 28},
+		snake: {startLength: 3, startSpeed: 300, speedIncrement: 10, minSpeed: 100, growBy: 2}
 	}
 
 	private DIRECTION = {

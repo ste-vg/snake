@@ -11,6 +11,7 @@
     --grid-size: 0;
     
     --color-background: #7ca256;
+    --color-background-dark: darken(#7ca256, 6%);
     --color-snake: #212121;
 	
     background: #fff;
@@ -23,11 +24,18 @@
  	grid-template-rows: repeat(var(--grid-rows), 1fr);
     grid-gap: 1px;
     
-    background-color: var(--color-background);
+    background-image: radial-gradient(farthest-corner at 10px 10px,
+    var(--color-background) 0%, var(--color-background-dark) 100%);
+    //background-color: var(--color-background);
 	
 	>div
 	{
-        background-color: var(--color-background);
+        background-color: transparent;
+
+        &.food, &.snake
+        {
+            box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.1);
+        }
 
         &.food
         {

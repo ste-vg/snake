@@ -1,7 +1,4 @@
-import { Snake } from "./app/snake";
+import { App } from "./app/app";
 
-let board = document.getElementById('board');
-let score = document.getElementById('score');
-
-let game = new Snake(board, score);
-game.start();
+let container = document.getElementById('app-container');
+let app = new App(container);
