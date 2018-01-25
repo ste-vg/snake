@@ -1,7 +1,6 @@
 @keyframes flash {
     0% { opacity: 1 }
-    50% { opacity: 0.5 }
-    100% { opacity: 1 }
+    50% { opacity: 0 }
   }
 
 #board 
@@ -90,7 +89,7 @@
 
             &.dead
             {
-                animation: flash 0.4s infinite;
+                animation: flash 0.3s steps(1) infinite;
             }
         }
 
