@@ -25,4 +25,5 @@ export interface States
     game: string;
     timeStamp: number;
     snakeLength: number;
+    score: number;
 }

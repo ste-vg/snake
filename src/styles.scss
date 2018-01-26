@@ -11,4 +11,8 @@ html, body
 {
 	width: 100%;
 	height: 100%;
+
+	--color-background: #7ca256;
+    --color-background-dark: darken(#7ca256, 6%);
+    --color-snake: #212121;
 }

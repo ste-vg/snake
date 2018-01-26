@@ -11,5 +11,30 @@
 	height: 100%;
     width: 100%;
     
-    font-family: 'VT323', monospace;
+	font-family: 'VT323', monospace;
+
+	.score-container
+	{
+		text-transform: uppercase;
+
+		#score
+		{
+			font-size: 2em;
+			font-weight: 300;
+		}
+	}
+
+	.board-container
+	{
+		border-radius: 5px;
+		padding: 20px;
+		box-shadow: 9px 7px 30px -6px rgba(0,0,0,0.25);
+		background-image: radial-gradient(farthest-corner at 10px 10px, var(--color-background) 0%, var(--color-background-dark) 100%);
+
+		#board
+		{
+			border-radius: inherit;
+			border: solid 1px var(--color-snake);
+		}
+	}
 }

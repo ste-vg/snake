@@ -1,7 +1,7 @@
 import '../styles.scss';
 import './snake.scss';
 
-import { Observable, Subscription } from "rxjs";
+import { Observable, Subscription, Subject } from "rxjs";
 
 import { States, Position, SnakePart, Direction } from "./Interfaces";
 
@@ -9,6 +9,7 @@ export class Snake
 {
 	private SETTINGS = {
 		grid: {size: 10, rows: 20, columns: 28},
+		game: {scoreIncrement: 10},
 		snake: {startLength: 3, startSpeed: 300, speedIncrement: 10, minSpeed: 100, growBy: 2}
 	}
 
@@ -19,7 +20,7 @@ export class Snake
 		right: 	{name: 'right', x: 1, 	y: 0},
 	}
 
-	private GAME_STATES = {
+	public GAME_STATES = {
 		ready: 'READY',
 		playing: 'PLAYING',
 		ended: 'ENDED',
@@ -32,7 +33,8 @@ export class Snake
 		speed: 0,
 		game: this.GAME_STATES.ready,
 		timeStamp: 0,
-		snakeLength: 0
+		snakeLength: 0,
+		score: 0
 	}
 
 	private board:HTMLElement;
@@ -40,13 +42,18 @@ export class Snake
 	private snake:SnakePart[] = [];
 	private food:Position;
 
+	// subjects
+
+	public state:Subject<string> = new Subject();
+	public score:Subject<number> = new Subject();
+
 	// observables
 	private keyPress:Observable<any>;
 
 	// subscriptions
 	private keyPressSubscription:Subscription;
 
-	constructor(boardElement: HTMLElement, scoreElement: HTMLElement)
+	constructor(boardElement: HTMLElement)
 	{
 		this.board = boardElement;
 		
@@ -77,10 +84,6 @@ export class Snake
 				this.setDirection(this.DIRECTION[key])
 			}
 		})
-
-		// setup starting game state
-
-		this.reset();
 	}
 
 	private setDirection(direction:Direction)
@@ -91,11 +94,14 @@ export class Snake
 		}
 	}
 
-	private reset()
+	public reset()
 	{
+		this.updateGameState(this.GAME_STATES.ready);
+
 		this.snake = []
 		this.states.direction = this.states.nextDirection = this.DIRECTION.up;
 		this.states.snakeLength = this.SETTINGS.snake.startLength;
+		this.updateScore(0);
 		let center:Position = {x: Math.round(this.SETTINGS.grid.columns / 2), y: Math.round(this.SETTINGS.grid.rows / 2)};
 
 		for(let i = 0; i < this.states.snakeLength; i++)
@@ -165,10 +171,29 @@ export class Snake
 
 	private eatFood()
 	{
+		this.addScore();
 		this.states.snakeLength += this.SETTINGS.snake.growBy;
 		this.states.speed -= this.SETTINGS.snake.speedIncrement;
 		if(this.states.speed < this.SETTINGS.snake.minSpeed) this.states.speed = this.SETTINGS.snake.minSpeed;
 		this.placeFood();
+		
+	}
+
+	private updateGameState(newState:string)
+	{
+		this.states.game = newState;
+		this.state.next(this.states.game);
+	}
+
+	private addScore()
+	{
+		this.updateScore(this.states.score + this.SETTINGS.game.scoreIncrement);
+	}
+	
+	private updateScore(newScore:number)
+	{
+		this.states.score = newScore;
+		this.score.next(this.states.score);
 	}
 
 	private placeFood()
@@ -257,14 +282,14 @@ export class Snake
 		this.reset();
 		
 		this.states.speed = this.SETTINGS.snake.startSpeed;
-		this.states.game = this.GAME_STATES.playing;
+		this.updateGameState(this.GAME_STATES.playing);
 		this.tick(0);
 	}
 
 	private end()
 	{
 		console.warn('GAME OVER')
-		this.states.game = this.GAME_STATES.ended;
+		this.updateGameState(this.GAME_STATES.ended);
 		this.draw();
 	}
 }
