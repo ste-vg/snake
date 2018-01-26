@@ -3,6 +3,9 @@ import './app.scss';
 
 import { Observable, Subscription } from "rxjs";
 
+declare function require(moduleName: string): any;
+const {version : appVersion} = require('../../package.json');
+
 import { Snake } from "./snake";
 
 let html = require('./app.html');
@@ -25,6 +28,8 @@ export class App
         this.score = document.getElementById('score');
         let startButton = Observable.fromEvent(document.getElementById('startButton'), 'click');
         startButton.subscribe((e:MouseEvent) => { this.startGame(); })
+
+        document.getElementById('app-version').innerHTML = appVersion;
     }
 
     setupGame()
