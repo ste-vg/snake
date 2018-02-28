@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=VT323');
 
-.container
+#container
 {
     display: flex;
 	flex-direction: column;
@@ -10,31 +10,107 @@
 	padding: 0;
 	height: 100%;
     width: 100%;
-    
+    text-transform: uppercase;
 	font-family: 'VT323', monospace;
 
-	.score-container
-	{
-		text-transform: uppercase;
-
-		#score
-		{
-			font-size: 2em;
-			font-weight: 300;
-		}
-	}
+	
 
 	.board-container
 	{
-		border-radius: 5px;
-		padding: 20px;
+		border-radius: 8px;
+		margin: 20px;
+		padding: 20px 20px 10px 20px;
 		box-shadow: 9px 7px 30px -6px rgba(0,0,0,0.25);
 		background-image: radial-gradient(farthest-corner at 10px 10px, var(--color-background) 0%, var(--color-background-dark) 100%);
 
 		#board
 		{
-			border-radius: inherit;
+			border-radius: 5px;
 			border: solid 1px var(--color-snake);
+		}
+
+		.info-container
+		{
+			height: 100%;
+			width: 100%;
+			min-height: 50px;
+			margin-top: 5px;
+			display: flex;
+			flex-direction: row;
+			//align-items: center;
+			align-content: center;
+			justify-content: space-between;
+			
+
+			.label
+			{
+				margin: 5px 5px 0 0;
+			}
+
+			#score
+			{
+				font-size: 1.5em;
+				font-weight: 300;
+				padding: 10px 20px;
+			}
+
+			.flex
+			{
+				flex: 1;
+			}
+		}
+	}
+
+	#start-button
+	{
+		font-family: inherit;
+		text-transform: uppercase;
+		font-size: 1.5em;
+		background-color: transparent;
+		color: var(--color-snake);
+		padding: 10px 20px;
+		//border: 2px solid var(--color-snake);
+		border: 0;
+		border-radius: 2px;
+		//margin: 10px 10px 40px 10px;
+		cursor: pointer;
+
+		&:hover
+		{
+			color: white;
+			background-color: var(--color-background);
+			border-color: var(--color-background);
+		}
+	}
+
+	.state-driven
+	{
+		display: none;
+	}
+
+	&.READY
+	{
+		#start-button
+		{
+			display: block;
+		}
+	}
+	
+	&.PLAYING
+	{
+
+	}
+
+	&.ENDED
+	{
+		#start-button
+		{
+			display: block;
+		}
+
+		.re
+		{
+			display: inline;
 		}
 	}
 }

@@ -1,7 +1,8 @@
-@keyframes flash {
+@keyframes flash 
+{
     0% { opacity: 1 }
     50% { opacity: 0 }
-  }
+}
 
 #board 
 {
@@ -11,7 +12,6 @@
 
     width: calc(var(--grid-size) * var(--grid-columns) * 1px);
     height: calc(var(--grid-size) * var(--grid-rows) * 1px);
-	
 	display: grid;
 	grid-template-columns: repeat(var(--grid-columns), 1fr);
  	grid-template-rows: repeat(var(--grid-rows), 1fr);
@@ -81,8 +81,6 @@
             {
                 animation: flash 0.3s steps(1) infinite;
             }
-        }
-
-        
+        }  
 	}
 }

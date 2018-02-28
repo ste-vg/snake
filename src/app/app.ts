@@ -2,18 +2,18 @@ import '../styles.scss';
 import './app.scss';
 
 import { Observable, Subscription } from "rxjs";
+import { Snake } from "./snake";
 
 declare function require(moduleName: string): any;
 const {version : appVersion} = require('../../package.json');
 
-import { Snake } from "./snake";
-
-let html = require('./app.html');
+const html = require('./app.html');
 
 export class App
 {
     private game:Snake;
     private score:HTMLElement;
+    private container:HTMLElement;
     private gameState:string;
 
     constructor(container:HTMLElement)
@@ -26,20 +26,23 @@ export class App
     setupUI()
     {
         this.score = document.getElementById('score');
-        let startButton = Observable.fromEvent(document.getElementById('startButton'), 'click');
+        this.container = document.getElementById('container');
+        let startButton = Observable.fromEvent(document.getElementById('start-button'), 'click');
         startButton.subscribe((e:MouseEvent) => { this.startGame(); })
-
         document.getElementById('app-version').innerHTML = appVersion;
     }
 
     setupGame()
     {
         let board = document.getElementById('board');
+
         this.game = new Snake(board);
-
         this.game.score.subscribe((score:number) => this.score.innerHTML = String(score));
-        this.game.state.subscribe((state:string) => this.gameState = state);
-
+        this.game.state.subscribe((state:string) => 
+        {
+            this.gameState = state;
+            this.container.setAttribute('class', this.gameState);
+        })
         this.game.reset();
     }
 
