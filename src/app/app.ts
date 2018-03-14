@@ -3,9 +3,7 @@ import './app.scss';
 
 import { Observable, Subscription } from "rxjs";
 import { Snake } from "./snake";
-
-declare function require(moduleName: string): any;
-const {version : appVersion} = require('../../package.json');
+import { Pkg } from "../package";
 
 const html = require('./app.html');
 
@@ -29,7 +27,7 @@ export class App
         this.container = document.getElementById('container');
         let startButton = Observable.fromEvent(document.getElementById('start-button'), 'click');
         startButton.subscribe((e:MouseEvent) => { this.startGame(); })
-        document.getElementById('app-version').innerHTML = appVersion;
+        document.getElementById('app-version').innerHTML = Pkg().version;
     }
 
     setupGame()
