@@ -34,7 +34,7 @@ export class Input
 
     private mouseEventToCoordinate = (mouseEvent:MouseEvent) => 
     {
-        //mouseEvent.preventDefault();
+        mouseEvent.preventDefault();
         return {
             x: mouseEvent.clientX, 
             y: mouseEvent.clientY
