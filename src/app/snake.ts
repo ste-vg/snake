@@ -57,7 +57,7 @@ export class Snake
 		"start":{
 			"Frequency":{"Start":463.2977575242697,"Slide":0.4268311992714056,"RepeatSpeed":0.6870767779635416},
 			"Generator":{"A":0.015696072909390766},
-			"Volume":{"Sustain":0.31353385475559997,"Decay":0.15242709930669884}
+			"Volume":{"Sustain":0.11353385475559997,"Decay":0.15242709930669884}
 		},
 		"collect1":{
 			"Frequency":{"Start":1183.9224793246758,"ChangeSpeed":0.12793431035602038,"ChangeAmount":4.8612434857196085},
