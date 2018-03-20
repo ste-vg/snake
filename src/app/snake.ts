@@ -6,6 +6,14 @@ import { Observable, Subscription, Subject } from "rxjs";
 import { States, Position, SnakePart, Direction } from "./Interfaces";
 import { Input } from './input';
 
+export enum GAME_STATES
+{
+	ready = 'READY',
+	playing = 'PLAYING',
+	ended = 'ENDED',
+	paused = 'PAUSED'
+}
+
 export class Snake
 {
 	private SETTINGS = {
@@ -21,18 +29,11 @@ export class Snake
 		right: 	{name: 'right', x: 1, 	y: 0},
 	}
 
-	public GAME_STATES = {
-		ready: 'READY',
-		playing: 'PLAYING',
-		ended: 'ENDED',
-		paused: 'PAUSED'
-	}
-
 	private states:States = {
 		direction: this.DIRECTION.up,
 		nextDirection: [this.DIRECTION.up],
 		speed: 0,
-		game: this.GAME_STATES.ready,
+		game: GAME_STATES.ready,
 		timeStamp: 0,
 		snakeLength: 0,
 		score: 0
@@ -117,7 +118,7 @@ export class Snake
 
 		this.keyPressSubscription = this.keyPress.subscribe((key: string) => 
 		{
-			if(this.states.game == this.GAME_STATES.playing)
+			if(this.states.game == GAME_STATES.playing)
 			{
 				this.setDirection(this.DIRECTION[key])
 			}
@@ -150,7 +151,7 @@ export class Snake
 
 	public reset()
 	{
-		this.updateGameState(this.GAME_STATES.ready);
+		this.updateGameState(GAME_STATES.ready);
 
 		this.snake = []
 		this.states.direction = this.DIRECTION.up;
@@ -183,7 +184,7 @@ export class Snake
 		for(let i = 0; i < this.snake.length; i++)
 		{
 			let classes = ['snake'];
-			if(this.states.game == this.GAME_STATES.ended) classes.push('dead');
+			if(this.states.game == GAME_STATES.ended) classes.push('dead');
 			if(i == 0) classes.push('tail');
 			if(i == this.snake.length - 1) classes.push('head');
 			let snakePart = this.snake[i];
@@ -272,7 +273,7 @@ export class Snake
 
 	private tick(timeStamp:number)
 	{
-		if(this.states.game == this.GAME_STATES.playing)
+		if(this.states.game == GAME_STATES.playing)
 		{
 			if(!this.states.timeStamp || (timeStamp - this.states.timeStamp) > this.states.speed)
 			{
@@ -345,14 +346,14 @@ export class Snake
 		this.reset();
 		
 		this.states.speed = this.SETTINGS.snake.startSpeed;
-		this.updateGameState(this.GAME_STATES.playing);
+		this.updateGameState(GAME_STATES.playing);
 		this.tick(0);
 	}
 
 	private end()
 	{
 		console.warn('GAME OVER')
-		this.updateGameState(this.GAME_STATES.ended);
+		this.updateGameState(GAME_STATES.ended);
 		this.direction.next('');
 		this.draw();
 	}

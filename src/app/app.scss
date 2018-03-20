@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=VT323');
 
 $tilt-amount: 10deg;
+$shine-move: 40px;
+$snake-lift: 20px;
 
 #container
 {
@@ -15,7 +17,7 @@ $tilt-amount: 10deg;
     text-transform: uppercase;
 	font-family: 'VT323', monospace;
 
-	perspective: 2000px;
+	perspective: 1700px;
 	
 
 	#board-container
@@ -24,31 +26,40 @@ $tilt-amount: 10deg;
 		margin: 20px;
 		padding: 20px 20px 10px 20px;
 		//box-shadow: 9px 7px 30px -6px rgba(0,0,0,0.25);
-		box-shadow: 0 45px 100px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
 		background-image: radial-gradient(farthest-corner at 10px 10px, var(--color-background) 0%, var(--color-background-dark) 100%);
 		transform: rotateX(0deg);
 		transform-style: preserve-3d;
-		transition: transform 0.3s ease;
-		
+		transition: transform 0.3s ease, box-shadow 0.5s ease;
+		//overflow: hidden;
 
 		#board
 		{
 			border-radius: 5px;
 			border: solid 1px var(--color-snake);
-			transform: translateZ(20px);
+			transform: translateZ($snake-lift);
 		}
 
-		.shine
+		.shine-container
 		{
 			position: absolute;
 			top: 0; 
 			left: 0;
 			right: 0; 
 			bottom: 0;
-			background: linear-gradient(90deg, rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 60%);
-			
-			pointer-events: none;
 			border-radius: 8px;
+			overflow: hidden;
+
+			.shine
+			{
+				position: absolute;
+				top: -$shine-move; 
+				left: -$shine-move;
+				right: -$shine-move; 
+				bottom: -$shine-move;
+				background: linear-gradient(45deg, rgba(255,255,255,.75) 0%,rgba(255,255,255,0) 60%);
+				transition: transform 0.3s ease;
+			}
 		}
 
 		.info-container
@@ -87,10 +98,26 @@ $tilt-amount: 10deg;
 	{
 		#board-container
 		{
-			&.up{ transform: rotateX($tilt-amount); }
-			&.down{ transform: rotateX(-$tilt-amount); }
-			&.left{ transform: rotateY(-$tilt-amount); }
-			&.right{ transform: rotateY($tilt-amount); }
+			&.up
+			{ 
+				transform: rotateX($tilt-amount); 
+				.shine-container .shine { transform: rotateX($tilt-amount) translateX(-$shine-move) translateZ(1px) } 
+			}
+			&.down
+			{ 
+				transform: rotateX(-$tilt-amount); 
+				.shine-container .shine { transform: rotateX(-$tilt-amount) translateX($shine-move) translateZ(1px) } 
+			}
+			&.left
+			{ 
+				transform: rotateY(-$tilt-amount); 
+				.shine-container .shine { transform: rotateY(-$tilt-amount) translateY(-$shine-move) translateZ(1px) } 
+			}
+			&.right
+			{ 
+				transform: rotateY($tilt-amount); 
+				.shine-container .shine { transform: rotateY($tilt-amount) translateY($shine-move) translateZ(1px) } 
+			}
 		}
 	}
 
@@ -112,7 +139,7 @@ $tilt-amount: 10deg;
 		&:hover
 		{
 			color: white;
-			background-color: var(--color-background);
+		//	background-color: var(--color-background);
 			border-color: var(--color-background);
 		}
 	}
@@ -132,7 +159,11 @@ $tilt-amount: 10deg;
 	
 	&.PLAYING
 	{
-
+		#board-container
+		{
+			box-shadow: 0 45px 100px rgba(0, 0, 0, 0.3);
+			transform: translateZ(10px)
+		}
 	}
 
 	&.ENDED

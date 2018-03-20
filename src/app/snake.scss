@@ -23,7 +23,8 @@
 
         &.food, &.snake
         {
-            box-shadow: 3px 3px 0px 0px rgba(0,0,0,0.1);
+            box-shadow: 0px 0px 0px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
         }
 
         &.food
@@ -83,4 +84,26 @@
             }
         }  
 	}
+}
+
+$snake-shadow: 5px;
+
+.up #board >div
+{
+    &.food, &.snake { box-shadow: 0px $snake-shadow 0px 0px rgba(0,0,0,0.1);}
+}
+
+.down #board >div
+{
+    &.food, &.snake { box-shadow: 0px (-$snake-shadow) 0px 0px rgba(0,0,0,0.1);}
+}
+
+.left #board >div
+{
+    &.food, &.snake { box-shadow: $snake-shadow 0px 0px 0px rgba(0,0,0,0.1);}
+}
+
+.right #board >div
+{
+    &.food, &.snake { box-shadow: -$snake-shadow 0px 0px 0px rgba(0,0,0,0.1);}
 }
