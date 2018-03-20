@@ -10,7 +10,7 @@ module.exports = webpackMerge(commonConfig, {
   devtool: 'source-map',
 
   output: {
-    path: helpers.root('docs'),
+    path: helpers.root('dist'),
     publicPath: '/simple-snake/',
     filename: '[name].[hash].js',
     chunkFilename: '[id].[hash].chunk.js'

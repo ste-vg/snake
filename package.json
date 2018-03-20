@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/steveg3003/simple-snake.git"
+    "url": "git+https://github.com/steveg3003/snake.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/steveg3003/simple-snake/issues"
+    "url": "https://github.com/steveg3003/snake/issues"
   },
-  "homepage": "https://github.com/steveg3003/simple-snake#readme",
+  "homepage": "https://github.com/steveg3003/snake#readme",
   "dependencies": {
     "@types/core-js": "^0.9.36",
     "loov-jsfx": "^1.2.0",
