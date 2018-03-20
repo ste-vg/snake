@@ -6,12 +6,24 @@ import { Observable, Subscription, Subject } from "rxjs";
 import { States, Position, SnakePart, Direction } from "./Interfaces";
 import { Input } from './input';
 
+//declare var jsfx:any;
+
+const jsfx:any = require('loov-jsfx');
+
 export enum GAME_STATES
 {
 	ready = 'READY',
 	playing = 'PLAYING',
 	ended = 'ENDED',
 	paused = 'PAUSED'
+}
+
+export enum SOUND
+{
+	move = 'move',
+	dead = 'dead',
+	collect = 'collect',
+	start = 'start'
 }
 
 export class Snake
@@ -37,6 +49,68 @@ export class Snake
 		timeStamp: 0,
 		snakeLength: 0,
 		score: 0
+	}
+
+	//http://loov.io/jsfx
+
+	private sfxLibrary:any = {
+		"start":{
+			"Frequency":{"Start":463.2977575242697,"Slide":0.4268311992714056,"RepeatSpeed":0.6870767779635416},
+			"Generator":{"A":0.015696072909390766},
+			"Volume":{"Sustain":0.31353385475559997,"Decay":0.15242709930669884}
+		},
+		"collect1":{
+			"Frequency":{"Start":1183.9224793246758,"ChangeSpeed":0.12793431035602038,"ChangeAmount":4.8612434857196085},
+			"Volume":{"Sustain":0.011448880380128946,"Decay":0.3895997546965799,"Punch":0.4554389528366015}
+		},
+		"collect2":{
+			"Frequency":{"Start":1070.9337014976563,"ChangeSpeed":0.1375978771153015,"ChangeAmount":5.9409661118536246},
+			"Volume":{"Sustain":0.04890791064198004,"Decay":0.3415421194668815,"Punch":0.46291381941601983}
+		},
+		"dead":{
+			"Frequency":{"Start":194.70758491034655,"Slide":-0.011628522004559189,"ChangeSpeed":0.6591296059731018,"ChangeAmount":2.6287197798189297},
+			"Generator":{"Func":"noise"},
+			"Volume":{"Sustain":0.17655222296084297,"Decay":0.24077933399701645,"Punch":0.6485369099751499}
+		},
+		"move1":{
+			"Frequency":{"Start":452,"Slide":-0.04,"Min":30,"DeltaSlide":-0.05},
+			"Generator":{"Func":"sine","A":0.08999657142884616,"ASlide":0.3390436675524937},
+			"Filter":{"HP":0.10068425608105215},
+			"Volume":{"Sustain":0,"Decay":0.041,"Attack":0.011,"Punch":0.04,"Master":0.18}
+		},
+		"move2":{
+			"Frequency":{"Start":452,"Slide":-0.01,"Min":30,"DeltaSlide":-0.05},
+			"Generator":{"Func":"sine","A":0.08999657142884616,"ASlide":0.3390436675524937},
+			"Filter":{"HP":0.26,"LPResonance":0,"HPSlide":0.35,"LPSlide":0.51,"LP":1},
+			"Volume":{"Sustain":0.02,"Decay":0.001,"Attack":0.021,"Punch":0.05,"Master":0.18},
+			"Phaser":{"Offset":-0.03,"Sweep":-0.02},
+			"Vibrato":{"FrequencySlide":0.04,"Frequency":14.01,"Depth":0.06}
+		},
+		"move3":{
+			"Frequency":{"Start":452,"Slide":-0.01,"Min":30,"DeltaSlide":-0.05},
+			"Generator":{"Func":"sine","A":0.08999657142884616,"ASlide":0.3390436675524937},
+			"Filter":{"HP":0.26,"LPResonance":0,"HPSlide":0.35,"LPSlide":0.51,"LP":1},
+			"Volume":{"Sustain":0.02,"Decay":0.001,"Attack":0.021,"Punch":0.05,"Master":0.18},
+			"Phaser":{"Offset":-0.03,"Sweep":-0.02},
+			"Vibrato":{"FrequencySlide":0.04,"Frequency":14.01,"Depth":0.16}
+		},
+		"move4":{
+			"Frequency":{"Start":452,"Slide":-0.01,"Min":30,"DeltaSlide":-0.05},
+			"Generator":{"Func":"sine","A":0.08999657142884616,"ASlide":0.3390436675524937},
+			"Filter":{"HP":0.26,"LPResonance":0,"HPSlide":0.35,"LPSlide":0.51,"LP":1},
+			"Volume":{"Sustain":0.02,"Decay":0.001,"Attack":0.021,"Punch":0.05,"Master":0.18},
+			"Phaser":{"Offset":-0.03,"Sweep":-0.02},
+			"Vibrato":{"FrequencySlide":0.04,"Frequency":14.01,"Depth":0.27}
+		}
+	}
+
+	private player:any = jsfx.Sounds(this.sfxLibrary);
+
+	private sounds:any = {
+		collect: ['collect1', 'collect2'],
+		dead: ['dead'],
+		start: ['start'],
+		move: ['move1', 'move2', 'move3', 'move4']
 	}
 
 	private board:HTMLElement;
@@ -126,6 +200,13 @@ export class Snake
 
 		this.keyRestartSubscription = onEnter.subscribe(e => this.start())
 	}
+
+	private playSound(type:SOUND)
+	{
+		let options = this.sounds[type];
+		let selected = options[Math.floor(Math.random() * options.length)];
+		this.player[selected]();
+	}
 	
 	private checkDirection(setDirection:Direction, newDirection:Direction):boolean
 	{
@@ -145,8 +226,16 @@ export class Snake
 			}
 		}
 
-		if(queueable && this.checkDirection(this.states.nextDirection[0], direction)) this.states.nextDirection.push(direction);
-		else if(this.checkDirection(this.states.direction, direction)) this.states.nextDirection = [direction];
+		if(queueable && this.checkDirection(this.states.nextDirection[0], direction)) 
+		{
+			this.states.nextDirection.push(direction);
+			this.playSound(SOUND.move);
+		}
+		else if(this.checkDirection(this.states.direction, direction)) 
+		{
+			this.states.nextDirection = [direction];
+			this.playSound(SOUND.move);
+		}
 	}
 
 	public reset()
@@ -228,6 +317,7 @@ export class Snake
 	private eatFood()
 	{
 		this.addScore();
+		this.playSound(SOUND.collect);
 		this.states.snakeLength += this.SETTINGS.snake.growBy;
 		this.states.speed -= this.SETTINGS.snake.speedIncrement;
 		if(this.states.speed < this.SETTINGS.snake.minSpeed) this.states.speed = this.SETTINGS.snake.minSpeed;
@@ -344,7 +434,7 @@ export class Snake
 	public start()
 	{
 		this.reset();
-		
+		this.playSound(SOUND.start);
 		this.states.speed = this.SETTINGS.snake.startSpeed;
 		this.updateGameState(GAME_STATES.playing);
 		this.tick(0);
@@ -353,6 +443,7 @@ export class Snake
 	private end()
 	{
 		console.warn('GAME OVER')
+		this.playSound(SOUND.dead);
 		this.updateGameState(GAME_STATES.ended);
 		this.direction.next('');
 		this.draw();
