@@ -4,6 +4,7 @@ import './snake.scss';
 import { Observable, Subscription, Subject } from "rxjs";
 
 import { States, Position, SnakePart, Direction } from "./Interfaces";
+import { Input } from './input';
 
 export class Snake
 {
@@ -29,7 +30,7 @@ export class Snake
 
 	private states:States = {
 		direction: this.DIRECTION.up,
-		nextDirection: this.DIRECTION.up,
+		nextDirection: [this.DIRECTION.up],
 		speed: 0,
 		game: this.GAME_STATES.ready,
 		timeStamp: 0,
@@ -41,17 +42,23 @@ export class Snake
 	private grid:HTMLElement[] = [];
 	private snake:SnakePart[] = [];
 	private food:Position;
+	private touchStartPosition:Position;
 
 	// subjects
 
 	public state:Subject<string> = new Subject();
 	public score:Subject<number> = new Subject();
+	public direction:Subject<string> = new Subject();
 
 	// observables
 	private keyPress:Observable<any>;
+	private input:Input;
 
 	// subscriptions
 	private keyPressSubscription:Subscription;
+	private touchStartSubscription:Subscription;
+	private touchEndSubscription:Subscription;
+	private keyRestartSubscription:Subscription;
 
 	constructor(boardElement: HTMLElement)
 	{
@@ -72,10 +79,41 @@ export class Snake
 		}
 
 		// setup observables
+
+		this.input = new Input(document.body);
 	
 		this.keyPress = Observable.fromEvent(document, "keydown")
 			.filter((e:KeyboardEvent) => ['arrowright', 'arrowleft', 'arrowup', 'arrowdown'].indexOf(e.key.toLowerCase()) >= 0)
 			.map((e:KeyboardEvent) => e.key.toLowerCase().replace('arrow',''))
+
+		let onEnter = Observable.fromEvent(document, "keydown")
+			.filter((e:KeyboardEvent) => ['enter'].indexOf(e.key.toLowerCase()) >= 0)
+				
+		this.touchStartSubscription = this.input.starts.subscribe((position:Position) => {
+			this.touchStartPosition = position;
+		})
+
+		this.touchEndSubscription = this.input.ends.subscribe((position:Position) => 
+		{
+			let hDiff = this.touchStartPosition.x - position.x;	
+			let hDiffAbs = Math.abs(hDiff);	
+			let vDiff = this.touchStartPosition.y - position.y;
+			let vDiffAbs = Math.abs(vDiff);
+			
+			if(hDiffAbs > 10 || vDiffAbs > 10)
+			{
+				if(hDiffAbs > vDiffAbs)
+				{
+					if(hDiff < 0) this.setDirection(this.DIRECTION['right']);
+					else this.setDirection(this.DIRECTION['left']);
+				}
+				else
+				{
+					if(vDiff < 0) this.setDirection(this.DIRECTION['down']);
+					else this.setDirection(this.DIRECTION['up']);
+				}
+			}
+		})			
 
 		this.keyPressSubscription = this.keyPress.subscribe((key: string) => 
 		{
@@ -84,14 +122,30 @@ export class Snake
 				this.setDirection(this.DIRECTION[key])
 			}
 		})
+
+		this.keyRestartSubscription = onEnter.subscribe(e => this.start())
+	}
+	
+	private checkDirection(setDirection:Direction, newDirection:Direction):boolean
+	{
+		return setDirection.x != newDirection.x && setDirection.y != newDirection.y;	
 	}
 
 	private setDirection(direction:Direction)
 	{
-		if(this.states.direction.x != direction.x && this.states.direction.y != direction.y)
+		let queueable:boolean = false;
+
+		if(this.states.direction.name != this.states.nextDirection[0].name)
 		{
-			this.states.nextDirection = direction;
+			//if a valid move we could queue this move
+			if(this.states.nextDirection.length == 1 && this.checkDirection(this.states.nextDirection[0], direction))
+			{
+				queueable = true;
+			}
 		}
+
+		if(queueable && this.checkDirection(this.states.nextDirection[0], direction)) this.states.nextDirection.push(direction);
+		else if(this.checkDirection(this.states.direction, direction)) this.states.nextDirection = [direction];
 	}
 
 	public reset()
@@ -99,7 +153,8 @@ export class Snake
 		this.updateGameState(this.GAME_STATES.ready);
 
 		this.snake = []
-		this.states.direction = this.states.nextDirection = this.DIRECTION.up;
+		this.states.direction = this.DIRECTION.up;
+		this.states.nextDirection = [this.DIRECTION.up];
 		this.states.snakeLength = this.SETTINGS.snake.startLength;
 		this.updateScore(0);
 		let center:Position = {x: Math.round(this.SETTINGS.grid.columns / 2), y: Math.round(this.SETTINGS.grid.rows / 2)};
@@ -222,7 +277,15 @@ export class Snake
 			if(!this.states.timeStamp || (timeStamp - this.states.timeStamp) > this.states.speed)
 			{
 				this.states.timeStamp = timeStamp;
-				this.states.direction = this.states.nextDirection;
+				if(this.states.nextDirection.length > 1)
+				{
+					this.states.direction = this.states.nextDirection.shift();
+				}
+				else
+				{
+					this.states.direction = this.states.nextDirection[0];
+				}
+				this.direction.next(this.states.nextDirection[this.states.nextDirection.length - 1].name);
 
 				let snakeHead = this.snake[this.snake.length - 1];
 				let newPosition:Position = {
@@ -290,6 +353,7 @@ export class Snake
 	{
 		console.warn('GAME OVER')
 		this.updateGameState(this.GAME_STATES.ended);
+		this.direction.next('');
 		this.draw();
 	}
 }

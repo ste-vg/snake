@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=VT323');
 
+$tilt-amount: 10deg;
+
 #container
 {
     display: flex;
@@ -13,20 +15,40 @@
     text-transform: uppercase;
 	font-family: 'VT323', monospace;
 
+	perspective: 2000px;
 	
 
-	.board-container
+	#board-container
 	{
 		border-radius: 8px;
 		margin: 20px;
 		padding: 20px 20px 10px 20px;
-		box-shadow: 9px 7px 30px -6px rgba(0,0,0,0.25);
+		//box-shadow: 9px 7px 30px -6px rgba(0,0,0,0.25);
+		box-shadow: 0 45px 100px rgba(0, 0, 0, 0.4);
 		background-image: radial-gradient(farthest-corner at 10px 10px, var(--color-background) 0%, var(--color-background-dark) 100%);
+		transform: rotateX(0deg);
+		transform-style: preserve-3d;
+		transition: transform 0.3s ease;
+		
 
 		#board
 		{
 			border-radius: 5px;
 			border: solid 1px var(--color-snake);
+			transform: translateZ(20px);
+		}
+
+		.shine
+		{
+			position: absolute;
+			top: 0; 
+			left: 0;
+			right: 0; 
+			bottom: 0;
+			background: linear-gradient(90deg, rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 60%);
+			
+			pointer-events: none;
+			border-radius: 8px;
 		}
 
 		.info-container
@@ -40,7 +62,7 @@
 			//align-items: center;
 			align-content: center;
 			justify-content: space-between;
-			
+			transform: translateZ(20px);
 
 			.label
 			{
@@ -61,6 +83,17 @@
 		}
 	}
 
+	&.PLAYING
+	{
+		#board-container
+		{
+			&.up{ transform: rotateX($tilt-amount); }
+			&.down{ transform: rotateX(-$tilt-amount); }
+			&.left{ transform: rotateY(-$tilt-amount); }
+			&.right{ transform: rotateY($tilt-amount); }
+		}
+	}
+
 	#start-button
 	{
 		font-family: inherit;
@@ -74,6 +107,7 @@
 		border-radius: 2px;
 		//margin: 10px 10px 40px 10px;
 		cursor: pointer;
+		outline: none;
 
 		&:hover
 		{
@@ -112,5 +146,18 @@
 		{
 			display: inline;
 		}
+	}
+
+	.controls
+	{
+		.keyboard{ display: inline; }
+		.touch{ display: none; }
+
+		@media (any-hover: none) and (any-pointer: coarse) 
+		{ 
+			.keyboard{ display: none; }
+			.touch{ display: inline; }
+		}
+
 	}
 }

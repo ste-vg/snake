@@ -20,6 +20,7 @@
   "homepage": "https://github.com/steveg3003/simple-snake#readme",
   "dependencies": {
     "@types/core-js": "^0.9.36",
+    "loov-jsfx": "^1.2.0",
     "rxjs": "^5.5.6"
   },
   "devDependencies": {

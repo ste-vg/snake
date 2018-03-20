@@ -12,6 +12,7 @@ export class App
     private game:Snake;
     private score:HTMLElement;
     private container:HTMLElement;
+    private boardContainer:HTMLElement;
     private gameState:string;
 
     constructor(container:HTMLElement)
@@ -25,9 +26,11 @@ export class App
     {
         this.score = document.getElementById('score');
         this.container = document.getElementById('container');
+        this.boardContainer = document.getElementById('board-container');
         let startButton = Observable.fromEvent(document.getElementById('start-button'), 'click');
         startButton.subscribe((e:MouseEvent) => { this.startGame(); })
-        document.getElementById('app-version').innerHTML = Pkg().version;
+
+        console.log(Pkg().version);
     }
 
     setupGame()
@@ -36,11 +39,8 @@ export class App
 
         this.game = new Snake(board);
         this.game.score.subscribe((score:number) => this.score.innerHTML = String(score));
-        this.game.state.subscribe((state:string) => 
-        {
-            this.gameState = state;
-            this.container.setAttribute('class', this.gameState);
-        })
+        this.game.state.subscribe((state:string) => this.container.setAttribute('class', state))
+        this.game.direction.subscribe((direction:string) => this.boardContainer.setAttribute('class', direction))
         this.game.reset();
     }
 
